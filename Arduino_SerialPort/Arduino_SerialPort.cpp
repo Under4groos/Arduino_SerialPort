@@ -1,6 +1,9 @@
 ﻿
 #include <iostream>
-#include "lib/serialib.h"
+ 
+#include "lib/httplib.h"
+
+
 #include "string"
 #include <sstream>
 using namespace std;
@@ -8,26 +11,36 @@ using namespace std;
 #define SERIAL_PORT "\\\\.\\COM3"
 #endif
 #include <vector>
-
+#include "lib/serialib.h"
 #define read cin;
 #define write cout;
-std::vector<std::string> tokens;
-size_t pos = 0;
+ 
+std::string str;
+httplib::Server svr;
+ 
+std::string trim(const std::string& source) {
+	std::string s(source);
+	s.erase(0, s.find_first_not_of(" \n\r\t"));
+	s.erase(s.find_last_not_of(" \n\r\t") + 1);
+	return s;
+}
+DWORD __stdcall THREAD__A(void* pObject) {
+	
 
+	svr.Get("/get", [](const httplib::Request&, httplib::Response& res) {
+		if (str == "")
+			str = "0:0";
+		res.set_content(str, "text/plain");
+		});
 
-std::vector<std::string> Splet(std::string str , std::string delimiter) {
-	tokens.clear();
-	pos = 0;
-	while ((pos = str.find(delimiter)) != std::string::npos) {
-		tokens.push_back(str.substr(0, pos));
-		str.erase(0, pos + delimiter.size());
-	}
-	return tokens;
+	svr.listen("0.0.0.0", 8080);
+	 
+	return 0;
 }
 
 int main()
 {
-	
+	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)THREAD__A, 0, 1, 0);
 	while (true)
 	{
 		serialib serial;
@@ -42,8 +55,8 @@ int main()
 		printf("Successful connection to %s\n", SERIAL_PORT);
 
 		unsigned char received[8];
-		char buffer[15] = "";
-		std::string str(buffer);
+		char buffer[256];
+		
 		 
 		int o;
 		try
@@ -52,21 +65,17 @@ int main()
 			while (true)
 			{
 
-				o = serial.readString(buffer, '\n', 128, 2000);
+				o = serial.readBytes(  buffer, ' ', 1024, 2000);
 				if (o == -1) {
 					cout << "Close Device" << endl;
 					serial.closeDevice();
 					break;
 				}
-				
-				if (buffer) {
-					str = { buffer };
-
-					for (const auto& str : Splet(str,":")) {
-						std::cout << str << std::endl;
-					}
-					Sleep(1000);
-				}
+				str = { buffer };
+				if(str[0] == 2)
+					cout << "\n\n" << endl;
+				cout << str << endl;
+				 
 					
 				 
 
