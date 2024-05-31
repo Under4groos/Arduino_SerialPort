@@ -65,15 +65,14 @@ int main()
 			while (true)
 			{
 
-				o = serial.readBytes(  buffer, ' ', 1024, 2000);
+				o = serial.readBytes(  buffer, ' ', 128, 2000);
 				if (o == -1) {
 					cout << "Close Device" << endl;
 					serial.closeDevice();
 					break;
 				}
 				str = { buffer };
-				if(str[0] == 2)
-					cout << "\n\n" << endl;
+			 
 				cout << str << endl;
 				 
 					
