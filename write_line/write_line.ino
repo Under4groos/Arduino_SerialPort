@@ -14,10 +14,10 @@ void loop() {
   data = "";
   for (size_t i = 2; i < 13; i++) {
     buttonState = !digitalRead(i);
-    data += String(buttonState);
+    data += String(buttonState) + String("|")   ;
     
   }
-  delay(1000);
+  delay(100);
   Serial.println(data );
    
 }

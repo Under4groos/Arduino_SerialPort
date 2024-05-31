@@ -11,6 +11,6 @@ void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
     int count = port.BytesToRead;
     byte[] ByteArray = new byte[count];
     port.Read(ByteArray, 0, count);
-    Console.WriteLine(System.Text.Encoding.Default.GetString(ByteArray));
+    Console.WriteLine(System.Text.Encoding.Default.GetString(ByteArray).Replace("\n", ""));
 }
 while (true) ;

@@ -136,6 +136,7 @@
     <ClCompile Include="lib\serialib.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="lib\httplib.h" />
     <ClInclude Include="lib\serialib.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

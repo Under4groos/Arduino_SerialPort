@@ -19,7 +19,7 @@ using namespace std;
 #define read cin;
 #define write cout;
  
-std::string str;
+std::string response;
 httplib::Server svr;
  
 std::string trim(const std::string& source) {
@@ -32,9 +32,8 @@ DWORD __stdcall THREAD__A(void* pObject) {
 	
 
 	svr.Get("/get", [](const httplib::Request&, httplib::Response& res) {
-		if (str == "")
-			str = "0:0";
-		res.set_content(str, "text/plain");
+		 
+		res.set_content(response, "text/plain");
 		});
 
 	svr.listen("0.0.0.0", 8080);
@@ -43,20 +42,18 @@ DWORD __stdcall THREAD__A(void* pObject) {
 }
  
 int o;
-char buffer[64];
-std::string response;
+char buffer[1024];
+
 
 
 int main()
 {
-	SetConsoleOutputCP(CP_UTF8);
-	 
+	SetConsoleOutputCP(CP_UTF8); 
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)THREAD__A, 0, 1, 0);
 	while (true)
 	{
 		serialib serial;
 		char errorOpening = serial.openDevice(SERIAL_PORT, 9600);
-
 		if (errorOpening != 1) {
 			cout << (int)errorOpening << endl;
 			cout << "Reloaded" << endl;
@@ -64,17 +61,11 @@ int main()
 			continue;
 		}
 		printf("Successful connection to %s\n", SERIAL_PORT);
-
-		
 		try
 		{
-			
 			while (true)
 			{
-				 
-				 
-				 
-				o = serial.readBytes(  buffer, '\n', sizeof buffer);
+				o = serial.readString(buffer, '\n', sizeof buffer);
 				response = std::string(buffer);
 
 				if (o == -1) {
@@ -82,23 +73,14 @@ int main()
 					serial.closeDevice();
 					break;
 				}
-				
-			 
 				cout << response << endl;
-			 
-					
-				 
-
 			}
-
 		}
 		catch (const std::exception& error)
 		{
 			cout << error.what() << endl;
 			serial.closeDevice();
-		}
-
-		
+		}	
 	}
 	
 }
