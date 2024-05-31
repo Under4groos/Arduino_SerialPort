@@ -1,25 +1,23 @@
 
-String BUFFER_RETURN = "";
-
-byte buttonState = 0;
  
-
+byte buttonState = 0;
 void setup() {
 
   Serial.begin(9600);
 
-  for (size_t i = 0; i < 13; i++) {
+  for (size_t i = 2; i < 13; i++) {
     pinMode(i, INPUT_PULLUP);
   }
 }
- 
+String data = "";
 void loop() {
-  BUFFER_RETURN = "";
+  data = "";
   for (size_t i = 2; i < 13; i++) {
-    buttonState = digitalRead(i);
-
-    Serial.print(  String(i) + ":" + (buttonState == LOW ? "true" : "false") );
+    buttonState = !digitalRead(i);
+    data += String(buttonState);
+    
   }
-  
-  delay(10);
+  delay(1000);
+  Serial.println(data );
+   
 }

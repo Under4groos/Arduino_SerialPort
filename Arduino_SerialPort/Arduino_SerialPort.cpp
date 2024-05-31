@@ -3,12 +3,16 @@
  
 #include "lib/httplib.h"
 
+#include <io.h>     
+#include <fcntl.h> 
+
+
 
 #include "string"
 #include <sstream>
 using namespace std;
 #if defined (_WIN32) || defined(_WIN64)
-#define SERIAL_PORT "\\\\.\\COM3"
+#define SERIAL_PORT "\\\\.\\COM4"
 #endif
 #include <vector>
 #include "lib/serialib.h"
@@ -37,9 +41,16 @@ DWORD __stdcall THREAD__A(void* pObject) {
 	 
 	return 0;
 }
+ 
+int o;
+char buffer[64];
+std::string response;
+
 
 int main()
 {
+	SetConsoleOutputCP(CP_UTF8);
+	 
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)THREAD__A, 0, 1, 0);
 	while (true)
 	{
@@ -54,27 +65,27 @@ int main()
 		}
 		printf("Successful connection to %s\n", SERIAL_PORT);
 
-		unsigned char received[8];
-		char buffer[256];
 		
-		 
-		int o;
 		try
 		{
 			
 			while (true)
 			{
+				 
+				 
+				 
+				o = serial.readBytes(  buffer, '\n', sizeof buffer);
+				response = std::string(buffer);
 
-				o = serial.readBytes(  buffer, ' ', 128, 2000);
 				if (o == -1) {
 					cout << "Close Device" << endl;
 					serial.closeDevice();
 					break;
 				}
-				str = { buffer };
+				
 			 
-				cout << str << endl;
-				 
+				cout << response << endl;
+			 
 					
 				 
 
